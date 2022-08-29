@@ -1,54 +1,47 @@
 package com.karinapinchuk.photostorage.service;
 
+import com.karinapinchuk.photostorage.entity.ObjectProfile;
 import com.karinapinchuk.photostorage.entity.PhotoStorage;
 import com.karinapinchuk.photostorage.enums.CityEnum;
+import com.karinapinchuk.photostorage.repository.ObjectRepository;
 import com.karinapinchuk.photostorage.repository.PhotoStorageRepository;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.Base64;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
 @AllArgsConstructor
-@Validated
 public class PhotoStorageService {
     private final PhotoStorageRepository photoStorageRepository;
+    private final ObjectRepository objectRepository;
 
-    public PhotoStorage addPhoto (MultipartFile file, CityEnum city, String description) {
-        PhotoStorage photoStorage = new PhotoStorage();
-        photoStorage.setCity(city);
-        photoStorage.setDescription(description);
-        try {
-            photoStorage.setPhoto(Base64.getEncoder().encodeToString(file.getBytes()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return photoStorageRepository.save(photoStorage);
-
+    public void addCity (CityEnum city) {
+        photoStorageRepository.save(new PhotoStorage(city));
     }
 
-    public void deletePhoto (@NonNull Long id) {
+    public PhotoStorage getCitybyId (@NonNull Long id) {
+        return photoStorageRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("City not found"));
+    }
+
+    public void deleteCity (@NonNull Long id) {
         PhotoStorage photoStorage = photoStorageRepository.findById(id)
-                                    .orElseThrow(() -> new NoSuchElementException("Photo not found"));
+                                    .orElseThrow(() -> new NoSuchElementException("City not found"));
         photoStorageRepository.delete(photoStorage);
     }
 
-    public void changeCity(@NonNull Long id, CityEnum newCity) {
+    public void updateCity(@NonNull Long id, CityEnum newCity) {
         PhotoStorage photoStorage = photoStorageRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Photo not found"));
+                .orElseThrow(() -> new NoSuchElementException("City not found"));
         photoStorage.setCity(newCity);
         photoStorageRepository.save(photoStorage);
     }
 
-    public void changeDescription(@NonNull Long id, String description) {
-        PhotoStorage photoStorage = photoStorageRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Photo not found"));
-        photoStorage.setDescription(description);
-        photoStorageRepository.save(photoStorage);
+    public List<ObjectProfile> getObjectList (@NonNull Long id) {
+        return new ArrayList<>(objectRepository.findAllByCityId(id));
     }
 }

@@ -6,9 +6,7 @@ import com.karinapinchuk.photostorage.repository.PhotoStorageRepository;
 import com.karinapinchuk.photostorage.service.PhotoStorageService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 
@@ -18,30 +16,20 @@ public class PhotoStorageController {
     private final PhotoStorageService photoStorageService;
     private final PhotoStorageRepository photoStorageRepository;
 
-    @GetMapping(value = "/photo/{id}")
-    public PhotoStorage getPhoto(@PathVariable Long id) {
+    @GetMapping(value = "/city/{id}")
+    public PhotoStorage getCity(@PathVariable Long id) {
         return photoStorageRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "No photo with such id"));
+                        HttpStatus.NOT_FOUND, "No city with such id"));
     }
 
-    @PostMapping(value = "/photo/save")
-    public void savePhoto(@RequestParam MultipartFile file, @RequestParam CityEnum city, @RequestParam String description) {
-        photoStorageService.addPhoto(file, city, description);
+    @PostMapping(value = "/city/add")
+    public void addCity(@RequestParam CityEnum city) {
+        photoStorageService.addCity(city);
     }
 
-    @DeleteMapping(value = "photo/delete/{id}")
-    public void deletePhoto(@PathVariable Long id) {
+    @DeleteMapping(value = "city/delete/{id}")
+    public void deleteCity(@PathVariable Long id) {
         photoStorageRepository.deleteById(id);
-    }
-
-    @PutMapping(value = "/photo/updateCity/{id}")
-    public void updateCity(@PathVariable Long id, @RequestParam CityEnum city) {
-        photoStorageService.changeCity(id, city);
-    }
-
-    @PutMapping(value = "/photo/updateDescription/{id}")
-    public void updateDescription(@PathVariable Long id, @RequestParam String description) {
-        photoStorageService.changeDescription(id, description);
     }
 }
