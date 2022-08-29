@@ -5,12 +5,14 @@ import com.karinapinchuk.photostorage.entity.PhotoProfile;
 import com.karinapinchuk.photostorage.enums.CityEnum;
 import com.karinapinchuk.photostorage.repository.PhotoRepository;
 import lombok.NonNull;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Base64;
 import java.util.NoSuchElementException;
 
+@Service
 public class PhotoService {
 
     private final PhotoRepository photoRepository;
@@ -29,6 +31,7 @@ public class PhotoService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        photoRepository.save(photoProfile);
     }
 
     public PhotoProfile getPhoto (@NonNull Long id) {

@@ -1,5 +1,7 @@
 package com.karinapinchuk.photostorage.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.karinapinchuk.photostorage.entity.ObjectProfile;
 import com.karinapinchuk.photostorage.entity.PhotoProfile;
 import com.karinapinchuk.photostorage.enums.CityEnum;
@@ -18,7 +20,9 @@ public class PhotoController {
     private final PhotoService photoService;
 
     @PostMapping(value = "photo/add")
-    public void addPhoto (MultipartFile file, String name, String description, ObjectProfile objectProfile) {
+    public void addPhoto (@RequestParam MultipartFile file, @RequestParam String name, @RequestParam String description, @RequestParam String objectString) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectProfile objectProfile = mapper.readValue(objectString, ObjectProfile.class);
         photoService.addPhoto(file, name, description, objectProfile);
     }
 
